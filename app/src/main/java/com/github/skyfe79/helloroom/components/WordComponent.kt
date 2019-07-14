@@ -23,7 +23,7 @@ data class WordModel(override val word: Word): ItemModel(), WordProvider {
         get() = word.hashCode()
 }
 
-class WordComponent(override var token: Token, override var receiveState: Boolean): ViewComponent(token, receiveState) {
+class WordComponent(token: Token, receiveState: Boolean): ViewComponent(token, receiveState) {
 
     private lateinit var textView: TextView
 
