@@ -21,56 +21,45 @@ data class DeleteWordAction(val word: Word): Action
 
 ```kotlin
 // Load all words from the DB
-fun MainViewModel.loadWords(state: State, action: Action): Observable<State> {
-    if (action !is LoadWordsAction) { return Observable.just(state) }
-    val mainViewState = (state as? MainViewState) ?: return Observable.just(state)
+fun MainViewModel.loadWords(state: MainViewState, action: LoadWordsAction): MainViewState {
 
     val words = WordDB.getInstance(getApplication())
         .wordDao()
         .getAlphabetizedWords()
 
-    return Observable.just(mainViewState.copy(words = words))
+    return state.copy(words = words)
 }
 
 // Insert an word into the DB
-fun MainViewModel.insertWord(state: State, action: Action): Observable<State> {
-    val act = (action as? InsertWordAction) ?: return Observable.just(state)
+fun MainViewModel.insertWord(state: MainViewState, action: InsertWordAction): MainViewState {
 
     WordDB.getInstance(getApplication())
         .wordDao()
-        .insert(act.word)
+        .insert(action.word)
 
-    nextDispatch(LoadWordsAction)
-
-    return Observable.just(state)
+    return loadWords(state, LoadWordsAction)
 }
 
 // Delete an word in the DB
-fun MainViewModel.deleteWord(state: State, action: Action): Observable<State> {
-    val act = (action as? DeleteWordAction) ?: return Observable.just(state)
+fun MainViewModel.deleteWord(state: MainViewState, action: DeleteWordAction): MainViewState {
 
     WordDB.getInstance(getApplication())
         .wordDao()
-        .delete(act.word)
+        .delete(action.word)
 
-    nextDispatch(LoadWordsAction)
-
-    return Observable.just(state)
+    return loadWords(state, LoadWordsAction)
 }
 ```
 
-## Postwares
+## Make Item models for RecyclerView
 
 ```kotlin
 // Make ItemModels from word list for the recycler view
-fun MainViewModel.makeItemModels(state: State, action: Action): Observable<State> {
-    if (action !is LoadWordsAction) { return Observable.just(state) }
-    val mainViewState = (state as? MainViewState) ?: return Observable.just(state)
-    if (mainViewState.words.isEmpty()) { return Observable.just(state) }
+fun MainViewModel.makeItemModels(state: MainViewState): MainViewState {
 
-    val itemModels = mainViewState.words.map { WordModel(it) }
+    val itemModels = state.words.map { WordModel(it) }
 
-    return Observable.just(mainViewState.copy(itemModels = itemModels))
+    return state.copy(itemModels = itemModels)
 }
 ```
 
@@ -80,27 +69,44 @@ fun MainViewModel.makeItemModels(state: State, action: Action): Observable<State
 data class MainViewState(
     val words: List<Word> = emptyList(),
     val itemModels: List<WordModel> = emptyList()
-): State()
+): State() {
+    override fun copyState(): MainViewState {
+        return copy()
+    }
+}
 ```
 
 ## MainViewModel
 
 ```kotlin
-class MainViewModel(application: Application): RootAndroidViewModelType<MainViewState>(application) {
+class MainViewModel(application: Application): RCKViewModel<MainViewState>(application) {
 
     val itemModels = Output<List<WordModel>>(emptyList())
 
     override fun setupStore() {
-        store.set(
-            initialState = MainViewState(),
-            middlewares = emptyArray(),
-            reducers = arrayOf(::loadWords, ::insertWord, ::deleteWord),
-            postwares = arrayOf(::makeItemModels)
-        )
+
+        initStore { store ->
+            store.initialState(MainViewState())
+
+            store.flow<LoadWordsAction>(
+                ::loadWords,
+                { state, _ -> makeItemModels(state) }
+            )
+
+            store.flow<InsertWordAction>(
+                ::insertWord,
+                { state, _ -> makeItemModels(state) }
+            )
+
+            store.flow<DeleteWordAction>(
+                ::deleteWord,
+                { state, _ -> makeItemModels(state) }
+            )
+        }
     }
 
-    operator fun get(index: Int): Word {
-        return store.state.words[index]
+    operator fun get(index: Int): Word = withState { state ->
+        state.words[index]
     }
 
     override fun on(newState: MainViewState) {
