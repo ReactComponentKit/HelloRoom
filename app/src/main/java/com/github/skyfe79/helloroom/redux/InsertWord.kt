@@ -15,5 +15,5 @@ fun MainViewModel.insertWord(state: MainViewState, action: InsertWordAction): Ma
         .wordDao()
         .insert(action.word)
 
-    return loadWords(state, LoadWordsAction)
+    return state
 }

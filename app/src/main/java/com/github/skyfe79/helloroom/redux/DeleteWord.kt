@@ -15,5 +15,5 @@ fun MainViewModel.deleteWord(state: MainViewState, action: DeleteWordAction): Ma
         .wordDao()
         .delete(action.word)
 
-    return loadWords(state, LoadWordsAction)
+    return state
 }

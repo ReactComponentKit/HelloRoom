@@ -35,17 +35,19 @@ class MainViewModel(application: Application): RCKViewModel<MainViewState>(appli
             store.initialState(MainViewState())
 
             store.flow<LoadWordsAction>(
-                ::loadWords,
+                { state, _ -> loadWords(state) },
                 { state, _ -> makeItemModels(state) }
             )
 
             store.flow<InsertWordAction>(
                 ::insertWord,
+                { state, _ -> loadWords(state) },
                 { state, _ -> makeItemModels(state) }
             )
 
             store.flow<DeleteWordAction>(
                 ::deleteWord,
+                { state, _ -> loadWords(state) },
                 { state, _ -> makeItemModels(state) }
             )
         }
