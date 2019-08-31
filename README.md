@@ -37,7 +37,7 @@ fun MainViewModel.insertWord(state: MainViewState, action: InsertWordAction): Ma
         .wordDao()
         .insert(action.word)
 
-    return loadWords(state, LoadWordsAction)
+    return state
 }
 
 // Delete an word in the DB
@@ -47,7 +47,7 @@ fun MainViewModel.deleteWord(state: MainViewState, action: DeleteWordAction): Ma
         .wordDao()
         .delete(action.word)
 
-    return loadWords(state, LoadWordsAction)
+    return state
 }
 ```
 
