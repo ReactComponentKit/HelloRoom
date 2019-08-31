@@ -9,12 +9,9 @@ import com.github.skyfe79.helloroom.actions.LoadWordsAction
 import com.github.skyfe79.helloroom.components.WordModel
 import io.reactivex.Observable
 
-fun MainViewModel.makeItemModels(state: State, action: Action): Observable<State> {
-    if (action !is LoadWordsAction) { return Observable.just(state) }
-    val mainViewState = (state as? MainViewState) ?: return Observable.just(state)
-    if (mainViewState.words.isEmpty()) { return Observable.just(state) }
+fun MainViewModel.makeItemModels(state: MainViewState): MainViewState {
 
-    val itemModels = mainViewState.words.map { WordModel(it) }
+    val itemModels = state.words.map { WordModel(it) }
 
-    return Observable.just(mainViewState.copy(itemModels = itemModels))
+    return state.copy(itemModels = itemModels)
 }

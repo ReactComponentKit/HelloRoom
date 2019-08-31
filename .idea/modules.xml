@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/HelloRoom.iml" filepath="$PROJECT_DIR$/HelloRoom.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/HelloRoom-app.iml" filepath="$PROJECT_DIR$/app/HelloRoom-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ReactComponentKit-HelloRoom.iml" filepath="$PROJECT_DIR$/ReactComponentKit-HelloRoom.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

@@ -5,7 +5,7 @@ import android.view.View
 import android.widget.TextView
 import com.github.skyfe79.android.reactcomponentkit.collectionmodels.ItemModel
 import com.github.skyfe79.android.reactcomponentkit.component.ViewComponent
-import com.github.skyfe79.android.reactcomponentkit.eventbus.Token
+import com.github.skyfe79.android.reactcomponentkit.viewmodel.Token
 import com.github.skyfe79.helloroom.R
 import com.github.skyfe79.helloroom.db.Word
 import org.jetbrains.anko.*
@@ -23,7 +23,7 @@ data class WordModel(override val word: Word): ItemModel(), WordProvider {
         get() = word.hashCode()
 }
 
-class WordComponent(token: Token, receiveState: Boolean): ViewComponent(token, receiveState) {
+class WordComponent(token: Token): ViewComponent(token) {
 
     private lateinit var textView: TextView
 
